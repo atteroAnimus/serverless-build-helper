@@ -1,0 +1,48 @@
+version: 2
+jobs:
+  build:
+  working-directory: /app
+  docker:
+    - image: docker:stable
+  steps:
+    - checkout
+    - setup_remote_docker
+    - run:
+        name: Install dependencies
+        command: |
+          apk add --no-cache \
+            py-pip=9.0.0-r1
+          pip install \
+            docker-compose==1.12.0 \
+            awscli==1.11.76
+    - restore_cache:
+        keys:
+          - v1-{{ .Branch }}
+        paths:
+          - /caches/app.tar
+    - run:
+        name: Load Docker image layer cache
+        command: |
+          set +o pipefail
+          docker load -i /caches/app.tar | true
+    - run:
+        name: Build Docker app image
+        command: |
+          docker build --cache-from=app -t app .
+    - run:
+        name: Save docker image layer cache
+        command: |
+          mkdir -p /caches
+          docker save -o /caches/app.tar app
+    - save_cache:
+        key: v1-{{ .Branch }}-{{ epoch }}
+        paths:
+          - /caches/app.tar
+    - run:
+        name: run Tests
+        command: |
+          echo "some tests here at some point"
+    - deploy:
+        name: Push docker image to dockerhub
+        command: |
+          docker login --username dantaylor --password $dockerpassword
