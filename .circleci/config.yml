@@ -45,7 +45,7 @@ jobs:
       - deploy:
           name: Push application Docker image
           command: |
-            docker login --username dantaylor --password $dockerpassword
+            echo $dockerpassword | docker login --username dantaylor --password-stdin
             docker tag app "dantaylor/serverless-build-helper:${CIRCLE_BRANCH}"
             docker push "dantaylor/serverless-build-helper:${CIRCLE_BRANCH}"
 # version: 2
