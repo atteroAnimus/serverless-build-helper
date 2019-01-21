@@ -3,6 +3,7 @@ RUN apt-get update -y \
     && curl -sL https://deb.nodesource.com/setup_8.x | bash - \
     && apt-get install nodejs -y \
     && npm install -g serverless@latest \
+    && npm install -g serverless-domain-manager \
     && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py; python get-pip.py \
     && pip install awscli \
     && dotnet tool install -g dotnet-xunit-to-junit
